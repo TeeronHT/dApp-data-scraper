@@ -34,7 +34,7 @@ def listOfDApps():
 						if 'submit/new' not in brokenDown and brokenDown not in dAppList:
 							end = brokenDown.index('\"', 13)
 							dApp = brokenDown[13:end]
-							if portalDApps is True:
+							if portalDApps(dApp) == True:
 								dAppList.append(dApp)
 
 	dAppList = list(set(dAppList))
@@ -82,22 +82,29 @@ def contractData(dAppList):
 				kovan = item[item.index('contractsKovan') + 16:]
 				kovanContracts = kovan[:kovan.index(']')]			
 				kovanContracts = kovanContracts.split('\",\"')
-				# print(kovanContracts)
 				dAppData['KovanContracts'] = kovanContracts
 
 				ETH = item[item.index('contractsMainnet') + 19:]
 				ETHContracts = ETH[:ETH.index(']')]	
 				ETHContracts = ETHContracts.split('\",\"')
-				# print(ETHContracts)
 				dAppData['EthereumMainnetContracts'] = ETHContracts
 
 				rinkeby = item[item.index('contractsRinkeby') + 18:]
 				rinkebyContracts = rinkeby[:rinkeby.index(']')]
 				rinkebyContracts = rinkebyContracts.split('\",\"')			
-				# print(rinkebyContracts)
 				dAppData['RinkebyContracts'] = rinkebyContracts
 
-		# contractsRopsten:[],contractsGoerli:[],contractsPoaMainnet:[],contractsGoChainMainnet:[],contractsXDaiMainnet:[],contractsEosMainnet:[],contractsSteemMainnet:[],contractsHiveMainnet:[],contractsLoomPlasmaChain:[],contractsLoomDAppChain:[],contractsKlaytnMainnet:[],contractsNeoMainnet:[],contractsObyteMainnet:[],contractsOstMainnet:[],contractsTronMainnet:[],contractsIconMainnet:[],contractsNearMainnet:[],contractsBscMainnet:[],contractsMoonriverMainnet:[],contractsMeterMainnet:[]
+				goerli = item[item.index('contractsGoerli') + 15:]
+				goerliContracts = goerli[:goerli.index(']')]
+				goerliContracts = goerliContracts.split('\",\"')			
+				dAppData['GoerliContracts'] = goerliContracts
+
+				ropsten = item[item.index('contractsRopsten') + 16:]
+				ropstenContracts = ropsten[:ropstem.index(']')]
+				ropstenContracts = ropstenContracts.split('\",\"')			
+				dAppData['RopstenContracts'] = ropstenContracts
+
+		# contractsPoaMainnet:[],contractsGoChainMainnet:[],contractsXDaiMainnet:[],contractsEosMainnet:[],contractsSteemMainnet:[],contractsHiveMainnet:[],contractsLoomPlasmaChain:[],contractsLoomDAppChain:[],contractsKlaytnMainnet:[],contractsNeoMainnet:[],contractsObyteMainnet:[],contractsOstMainnet:[],contractsTronMainnet:[],contractsIconMainnet:[],contractsNearMainnet:[],contractsBscMainnet:[],contractsMoonriverMainnet:[],contractsMeterMainnet:[]
 
 
 		# Data for the dApps themselves, not per contract
@@ -106,7 +113,7 @@ def contractData(dAppList):
 		for key, value in data[0].items():
 			if key == 'dApp':
 				dAppName = value
-			if key in ['KovanContracts','EthereumMainnetContracts','RinkebyContracts']:
+			if key in ['KovanContracts','EthereumMainnetContracts','RinkebyContracts', 'GoerliContracts', 'RopstenContracts']:
 				for contract in list(value):
 					if len(contract) > 3:
 						if '\"' in contract:
@@ -115,9 +122,7 @@ def contractData(dAppList):
 						contractData['contractAddress'] = contract
 						contractData['dAppName'] = dAppName
 						contractData['networkName'] = key[:key.index('Contract')]
-
-						if portalDApps(contractData) == True:
-							contractList.append(contractData)
+						contractList.append(contractData)
 
 	with open('Data.json', 'w') as outfile:
 		json.dump(contractList, outfile)
@@ -125,13 +130,15 @@ def contractData(dAppList):
 
 def portalDApps(dApp):
 
+	dApp = str(dApp)
+
 	portalDApps = ['Opensea', 'Opensea TestNet', 'Rarible', 'Rarible Rinkeby', 'Aave', 'Aave V3', 'Aave V2', 'Aave V1', 
 				   'Decentraland', 'Uniswap V1', 'Uniswap V2', 'Uniswap V3', 'Uniswap', 'Compound', 'Sushi Swap', 'Known Origin', 
 				   'Lido', 'Superrare', 'CryptoVoxel', 'Gem', 'Bored Ape Yacht Club', 'Cryptopunk', 'Foundation', 'Zora', 
 				   'Sorare', 'Curv', 'CowSwap', 'ShibaSwap', 'InstadApp', 'DODO', 'Convex Finance', 'Liquity', 'Ribbon', 'Rabbithole', 
 				   'Layer3', 'Otherside', 'Hyy.pe', 'Sandbox', 'ENS', 'Zapper', 'DeBank', 'APY Vision', 'Rarity Tools']
 
-	if dApp in portalDApps:
+	if dApp.replace('-', ' ').title() in portalDApps:
 		return True
 	else:
 		return False
